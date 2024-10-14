@@ -111,6 +111,11 @@ spec:
         - name: dev-shm
           mountPath: /dev/shm
         {{- end }}
+        {{- if .Values.jibri.custom.script.enabled }}
+        - name: custom-script
+          mountPath: /config/finalize.sh
+          subPath: {{.Values.jibri.custom.script.filename}}
+        {{- end }}
 
       volumes:
       - name: config
@@ -141,6 +146,13 @@ spec:
         {{- else }}
         emptyDir: {}
         {{- end }}
+      {{- if .Values.jibri.custom.script.enabled }}
+      - name: custom-script
+        configMap:
+          defaultMode: 511
+          name: {{.Values.jibri.custom.script.configMap}}
+      {{- end }}
+
       {{- if .Values.jibri.shm.enabled }}
       - name: dev-shm
       {{-   if .Values.jibri.shm.useHost }}
